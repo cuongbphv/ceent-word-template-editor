@@ -1,14 +1,13 @@
 "use client"
 
 import type React from "react"
-
-import { useState, useRef } from "react"
-import { Upload, FileText, AlertCircle } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Progress } from "@/components/ui/progress"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { processWordDocument } from "@/lib/document-processor"
-import type { Template } from "@/lib/types"
+import {useRef, useState} from "react"
+import {AlertCircle, FileText, Upload} from "lucide-react"
+import {Button} from "@/components/ui/button"
+import {Progress} from "@/components/ui/progress"
+import {Alert, AlertDescription} from "@/components/ui/alert"
+import {processWordDocument} from "@/lib/document-processor"
+import type {Template} from "@/lib/types"
 
 interface TemplateUploaderProps {
   onUpload: (template: Template) => void

@@ -1,8 +1,8 @@
 "use client"
 
-import { Card, CardContent } from "@/components/ui/card"
-import { FileInputIcon as Input, TextIcon as TextArea, BoxSelectIcon as FormSelect } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import {Card, CardContent} from "@/components/ui/card"
+import {BoxSelectIcon as FormSelect, FileInputIcon as Input, TextIcon as TextArea} from "lucide-react"
+import {Button} from "@/components/ui/button"
 
 const formElements = [
   { id: "input", icon: Input, label: "Text Input" },

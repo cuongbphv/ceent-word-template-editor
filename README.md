@@ -16,8 +16,8 @@ A powerful web application for creating, editing, and managing Word document tem
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/word-template-manager.git
-   cd word-template-manager
+   git clone https://github.com/cuongbphv/ceent-word-template-editor.git
+   cd ceent-word-template-editor
    ```
 
 2. Install dependencies:

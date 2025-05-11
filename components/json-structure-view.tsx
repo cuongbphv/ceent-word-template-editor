@@ -1,10 +1,10 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { Button } from "@/components/ui/button"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { AlertCircle, Copy, Download, RefreshCw, Code } from "lucide-react"
-import type { Template, FormElement } from "@/lib/types"
+import {useEffect, useState} from "react"
+import {Button} from "@/components/ui/button"
+import {Alert, AlertDescription} from "@/components/ui/alert"
+import {AlertCircle, Code, Copy, Download, RefreshCw} from "lucide-react"
+import type {FormElement, Template} from "@/lib/types"
 
 interface JsonStructureViewProps {
   template: Template | null

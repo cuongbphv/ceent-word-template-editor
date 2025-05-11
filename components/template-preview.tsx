@@ -1,10 +1,10 @@
 "use client"
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Wand2 } from "lucide-react"
-import type { Template, FormElement } from "@/lib/types"
-import { replaceVariables } from "@/lib/document-processor"
+import {useState} from "react"
+import {Button} from "@/components/ui/button"
+import {Wand2} from "lucide-react"
+import type {FormElement, Template} from "@/lib/types"
+import {replaceVariables} from "@/lib/document-processor"
 
 interface TemplatePreviewProps {
   template: Template | null

@@ -1,8 +1,8 @@
 "use client"
 
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { Wand2, ArrowRight } from "lucide-react"
+import {Input} from "@/components/ui/input"
+import {Button} from "@/components/ui/button"
+import {ArrowRight, Wand2} from "lucide-react"
 
 interface ApiSettingsProps {
   apiEndpoint: string

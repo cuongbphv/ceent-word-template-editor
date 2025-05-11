@@ -1,26 +1,16 @@
 "use client"
 
-import { useEffect, useState, useRef, useCallback } from "react"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Separator } from "@/components/ui/separator"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { 
-  FileText, 
-  Edit3, 
-  Code, 
-  Eye, 
-  Save, 
-  Download, 
-  RefreshCw,
-  AlertCircle,
-  Layers
-} from "lucide-react"
-import { extractVariables, replaceVariables } from "@/lib/document-processor"
-import type { Template, DocumentVariable, FormElement } from "@/lib/types"
+import {useCallback, useEffect, useRef, useState} from "react"
+import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs"
+import {Button} from "@/components/ui/button"
+import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card"
+import {Separator} from "@/components/ui/separator"
+import {Alert, AlertDescription} from "@/components/ui/alert"
+import {Input} from "@/components/ui/input"
+import {Label} from "@/components/ui/label"
+import {AlertCircle, Code, Download, Edit3, Eye, FileText, Layers, RefreshCw, Save} from "lucide-react"
+import {extractVariables, replaceVariables} from "@/lib/document-processor"
+import type {DocumentVariable, FormElement, Template} from "@/lib/types"
 
 interface WordEditorProps {
   template: Template | null

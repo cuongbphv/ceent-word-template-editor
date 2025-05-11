@@ -6,7 +6,7 @@ import { useState, useRef } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { TemplatePreview } from "@/components/template-preview"
-import { EnhancedFormEditor } from "@/components/enhanced-form-editor"
+import { FormEditor } from "@/components/form-editor"
 import { VariableDefinition } from "@/components/variable-definition"
 import { ApiSettings } from "@/components/api-settings"
 import { TemplateUploader } from "@/components/template-uploader"
@@ -36,7 +36,6 @@ export function TemplateEditor() {
     options: [],
   })
   const [documentVariables, setDocumentVariables] = useState<string[]>([])
-  const [editorMode, setEditorMode] = useState<'basic' | 'advanced'>('basic')
 
   const handleTemplateUpload = (newTemplate: Template) => {
     setTemplate(newTemplate)
@@ -216,147 +215,18 @@ export function TemplateEditor() {
                   </div>
                 ) : (
                   <>
-                    <div className="mb-4 flex justify-between items-center">
+                    <div className="mb-4">
                       <h3 className="text-lg font-medium">Form Editor</h3>
-                      <Button
-                        variant="outline"
-                        onClick={() => setEditorMode(editorMode === 'basic' ? 'advanced' : 'basic')}
-                      >
-                        Switch to {editorMode === 'basic' ? 'Advanced' : 'Basic'} Editor
-                      </Button>
                     </div>
                     
-                    {editorMode === 'advanced' ? (
-                      <EnhancedFormEditor
-                        template={template}
-                        elements={elements}
-                        updateElements={setElements}
-                        variables={documentVariables}
-                        updateVariables={setDocumentVariables}
-                        onSave={handleSaveTemplate}
-                      />
-                    ) : (
-                      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                        <div className="lg:col-span-2 relative">
-                          {/* Document editor */}
-                          <DocumentEditor 
-                            content={template.htmlContent || ""}
-                            onSave={(content) => {
-                              if (template) {
-                                handleSaveTemplate({
-                                  ...template,
-                                  htmlContent: content
-                                });
-                              }
-                            }}
-                            filename={template.name}
-                          />
-                          
-                          {/* Overlay for form elements */}
-                          <div className="absolute top-[70px] left-0 right-0 bottom-0 form-elements-container">
-                            <div className="relative h-full">
-                              {elements.map((element) => (
-                                <DraggableElement
-                                  key={element.id}
-                                  element={element}
-                                  onDrag={(deltaX, deltaY) => handleElementDrag(element.id, deltaX, deltaY)}
-                                  onRemove={() => removeElement(element.id)}
-                                  onClick={() => handleElementSelect(element)}
-                                />
-                              ))}
-                            </div>
-                          </div>
-                        </div>
-                        
-                        <div className="space-y-4">
-                          <div className="bg-gray-50 dark:bg-gray-900 border rounded-md p-4">
-                            <h3 className="font-medium mb-2">Form Elements</h3>
-                            <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
-                              Drag and position these elements on your document
-                            </p>
-                            
-                            <div className="space-y-2">
-                              {elements.map((element) => (
-                                <div
-                                  key={element.id}
-                                  className="p-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded shadow-sm cursor-move"
-                                  onClick={() => handleElementSelect(element)}
-                                >
-                                  <div className="flex justify-between items-center mb-1">
-                                    <span className="text-xs font-medium">{element.properties.label}</span>
-                                    <button
-                                      className="text-red-500 text-xs"
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        removeElement(element.id);
-                                      }}
-                                    >
-                                      ×
-                                    </button>
-                                  </div>
-
-                                  {element.type === "input" && (
-                                    <input
-                                      type="text"
-                                      className="w-full h-8 px-2 border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 rounded text-sm"
-                                      placeholder={`{{${element.properties.variableName || "variable"}}}`}
-                                      readOnly
-                                    />
-                                  )}
-
-                                  {element.type === "textarea" && (
-                                    <textarea
-                                      className="w-full h-[60px] px-2 py-1 border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 rounded text-sm"
-                                      placeholder={`{{${element.properties.variableName || "variable"}}}`}
-                                      readOnly
-                                    />
-                                  )}
-
-                                  {element.type === "dropdown" && (
-                                    <select className="w-full h-8 px-2 border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 rounded text-sm">
-                                      <option disabled selected>
-                                        {`{{${element.properties.variableName || "variable"}}}`}
-                                      </option>
-                                      {element.properties.options?.map((option, i) => (
-                                        <option key={i}>{option}</option>
-                                      ))}
-                                    </select>
-                                  )}
-                                </div>
-                              ))}
-                              
-                              {elements.length === 0 && (
-                                <p className="text-center text-sm text-gray-500 dark:text-gray-400 py-4">
-                                  No form elements yet. Create them from the Document tab or add new ones below.
-                                </p>
-                              )}
-                            </div>
-                            
-                            <div className="mt-4 flex flex-wrap gap-2">
-                              <Button size="sm" onClick={() => handleAddElement("input")}>Add Input</Button>
-                              <Button size="sm" onClick={() => handleAddElement("textarea")}>Add Textarea</Button>
-                              <Button size="sm" onClick={() => handleAddElement("dropdown")}>Add Dropdown</Button>
-                            </div>
-                          </div>
-                          
-                          {selectedElement && (
-                            <div className="bg-gray-50 dark:bg-gray-900 border rounded-md p-4">
-                              <h3 className="font-medium mb-3">Element Properties</h3>
-                              <VariableDefinition
-                                elements={elements}
-                                updateElement={updateElement}
-                                variables={variables}
-                                setVariables={setVariables}
-                                selectedElement={selectedElement}
-                                elementProperties={elementProperties}
-                                setElementProperties={setElementProperties}
-                                onCancelEdit={() => setSelectedElement(null)}
-                              />
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    )}
+                    <FormEditor
+                      template={template}
+                      elements={elements}
+                      updateElements={setElements}
+                      variables={documentVariables}
+                      updateVariables={setDocumentVariables}
+                      onSave={handleSaveTemplate}
+                    />
                   </>
                 )}
               </CardContent>

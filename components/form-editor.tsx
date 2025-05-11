@@ -1,33 +1,24 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
-import { Card, CardContent } from "@/components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Badge } from "@/components/ui/badge"
-import { 
-  Code, 
-  Eye, 
-  FileText, 
-  Trash2, 
-  Plus, 
-  MoveHorizontal, 
-  PanelLeft, 
-  PanelRight,
-  Edit, 
-  Save,
-  RefreshCw
-} from "lucide-react"
-import { DragIcon } from "@/components/ui/icons"
-import { extractVariables, replaceVariables } from "@/lib/document-processor"
-import { formatVariablePlaceholders } from "@/lib/variable-formatter"
-import { Separator } from "@/components/ui/separator"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import type { Template, FormElement, DocumentVariable } from "@/lib/types"
+import {useCallback, useEffect, useRef, useState} from "react"
+import {Card, CardContent} from "@/components/ui/card"
+import {Button} from "@/components/ui/button"
+import {Input} from "@/components/ui/input"
+import {Label} from "@/components/ui/label"
+import {Badge} from "@/components/ui/badge"
+import {Code, Edit, Eye, MoveHorizontal, PanelLeft, PanelRight, Plus, Save, Trash2} from "lucide-react"
+import {extractVariables} from "@/lib/document-processor"
+import {
+  cleanupAfterVariableDeletion,
+  createVariablePlaceholder,
+  processContentAfterEdit,
+  processVariableHighlighting
+} from "@/lib/variable-highlighter"
+import {createCursorManager} from "@/lib/cursor-position"
+import {Alert, AlertDescription} from "@/components/ui/alert"
+import type {FormElement, Template} from "@/lib/types"
 
-interface EnhancedFormEditorProps {
+interface FormEditorProps {
   template: Template | null
   elements: FormElement[]
   updateElements: (elements: FormElement[]) => void
@@ -36,14 +27,14 @@ interface EnhancedFormEditorProps {
   onSave?: (updatedTemplate: Template) => void
 }
 
-export function EnhancedFormEditor({
+export function FormEditor({
   template,
   elements,
   updateElements,
   variables,
   updateVariables,
   onSave
-}: EnhancedFormEditorProps) {
+}: FormEditorProps) {
   const [editMode, setEditMode] = useState<'visual' | 'source'>('visual')
   const [htmlContent, setHtmlContent] = useState("")
   const [sourceHtml, setSourceHtml] = useState("")
@@ -55,15 +46,34 @@ export function EnhancedFormEditor({
   const [variableToEdit, setVariableToEdit] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [localElements, setLocalElements] = useState<FormElement[]>([])
+  const [initialized, setInitialized] = useState(false)
   
   const editorRef = useRef<HTMLDivElement>(null)
+  const cursorManagerRef = useRef<ReturnType<typeof createCursorManager> | null>(null)
   const dragTargetRef = useRef<HTMLDivElement>(null)
+  
+  // Initialize cursor manager on first render
+  useEffect(() => {
+    if (!cursorManagerRef.current) {
+      // @ts-ignore
+      cursorManagerRef.current = createCursorManager(editorRef, setHtmlContent);
+    }
+  }, []);
   
   // Initialize editor content from template
   useEffect(() => {
+    console.log("Template in FormEditor:", template ? "Template available" : "No template");
+    
     if (template?.htmlContent) {
-      setHtmlContent(template.htmlContent)
-      setSourceHtml(template.htmlContent)
+      console.log("HTML Content length:", template.htmlContent.length);
+      
+      // Process content to ensure all variables are properly highlighted
+      const processedContent = processVariableHighlighting(template.htmlContent);
+      console.log("Set processed content in editor, length:", processedContent.length);
+      
+      setHtmlContent(processedContent);
+      setSourceHtml(processedContent);
+      setInitialized(true);
       
       // Initialize variable values
       const initialValues = variables.reduce((acc, v) => {
@@ -71,48 +81,100 @@ export function EnhancedFormEditor({
         return acc
       }, {} as Record<string, string>)
       setVariableValues(initialValues)
+    } else {
+      console.log("No template HTML content available");
     }
     
     if (elements) {
       setLocalElements(elements)
     }
-  }, [template, variables, elements])
+  }, [template, variables, elements]);
+  
+  // This effect ensures content is definitely loaded on first mount
+  useEffect(() => {
+    if (!initialized && template?.htmlContent) {
+      console.log("Initializing from useEffect - backup method");
+      const processedContent = processVariableHighlighting(template.htmlContent);
+      setHtmlContent(processedContent);
+      setSourceHtml(processedContent);
+      setInitialized(true);
+    }
+  }, [initialized, template]);
+  
+  // Force update on mount to ensure content is there
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (template?.htmlContent && !htmlContent) {
+        console.log("Forcing content update after timeout");
+        setHtmlContent(processVariableHighlighting(template.htmlContent));
+        setSourceHtml(processVariableHighlighting(template.htmlContent));
+      }
+    }, 500);
+    
+    return () => clearTimeout(timer);
+  }, [template, htmlContent]);
+  
+  // Editor event handlers
+  const handleInput = useCallback((e: React.FormEvent<HTMLDivElement>) => {
+    if (cursorManagerRef.current) {
+      cursorManagerRef.current.handleContentChange();
+    }
+  }, []);
+  
+  const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (cursorManagerRef.current && (e.key === 'Enter' || e.key === ' ')) {
+      cursorManagerRef.current.handleKeyDown(e);
+    }
+  }, []);
   
   // Save HTML content changes
   const saveHtmlChanges = () => {
     if (!template) return
     
     try {
+      let updatedContent = '';
+      
       // If in source mode, update from source editor
       if (editMode === 'source') {
-        setHtmlContent(sourceHtml)
+        updatedContent = sourceHtml;
+        setHtmlContent(sourceHtml);
         
         // Extract variables from the new HTML
-        const newVariables = extractVariables(sourceHtml)
-        updateVariables(newVariables)
+        const newVariables = extractVariables(sourceHtml);
+        updateVariables(newVariables);
         
         // Update values for new variables
-        const newValues = { ...variableValues }
+        const newValues = { ...variableValues };
         newVariables.forEach(v => {
           if (!newValues[v]) {
-            newValues[v] = ""
+            newValues[v] = "";
           }
-        })
-        setVariableValues(newValues)
+        });
+        setVariableValues(newValues);
+      } else {
+        // In visual mode, use the current editor content
+        updatedContent = editorRef.current?.innerHTML || htmlContent;
       }
       
-      // Save template with the current content
+      // Process content to ensure all variables are properly highlighted
+      const processedContent = processContentAfterEdit(updatedContent, variables);
+      
+      // Save template with the processed content
       if (onSave) {
         onSave({
           ...template,
-          htmlContent: editMode === 'source' ? sourceHtml : htmlContent
-        })
+          htmlContent: processedContent
+        });
       }
       
-      setError(null)
+      // Update local state with processed content
+      setHtmlContent(processedContent);
+      setSourceHtml(processedContent);
+      
+      setError(null);
     } catch (err) {
-      console.error("Error saving changes:", err)
-      setError("Failed to save changes")
+      console.error("Error saving changes:", err);
+      setError("Failed to save changes");
     }
   }
   
@@ -184,15 +246,28 @@ export function EnhancedFormEditor({
       document.createRange() // Fallback
     
     if (range) {
+      // Set the selection to where the variable should be inserted
       selection.removeAllRanges()
       selection.addRange(range)
       
-      // Insert the variable
-      document.execCommand('insertHTML', false, formatVariablePlaceholders(`{{${variable}}}`))
+      // Save current cursor position before inserting
+      const savedPosition = cursorManagerRef.current?.saveCursor();
       
-      // Update HTML content
+      // Insert the variable with proper highlighting
+      const variableHtml = createVariablePlaceholder(variable);
+      document.execCommand('insertHTML', false, variableHtml);
+      
+      // Update HTML content after insertion
       if (editorRef.current) {
-        setHtmlContent(editorRef.current.innerHTML)
+        // Update the state with new content
+        setHtmlContent(editorRef.current.innerHTML);
+        
+        // Restore cursor position after variable
+        setTimeout(() => {
+          if (editorRef.current && savedPosition) {
+            cursorManagerRef.current?.restoreCursor(savedPosition);
+          }
+        }, 0);
       }
     }
   }
@@ -241,7 +316,7 @@ export function EnhancedFormEditor({
     if (!variable) return
     
     // First, check if variable is in use in the HTML content
-    const regex = new RegExp(`{{\\s*${variable}\\s*}}`, 'g')
+    const regex = new RegExp(`<span[^>]*data-variable=["']${variable}["'][^>]*>{{\\s*${variable}\\s*}}</span>|{{\\s*${variable}\\s*}}`, 'g')
     const inUse = regex.test(htmlContent)
     
     if (inUse) {
@@ -249,12 +324,27 @@ export function EnhancedFormEditor({
         return
       }
       
-      // Remove variable from HTML content
-      let updatedHtml = htmlContent.replace(regex, '')
+      // Remove variable from HTML content - properly handling spans and any non-wrapped occurrences
+      let updatedHtml = htmlContent.replace(
+        new RegExp(`<span[^>]*data-variable=["']${variable}["'][^>]*>{{\\s*${variable}\\s*}}</span>`, 'g'), 
+        ''
+      )
+      // Also clean up any non-wrapped occurrences
+      updatedHtml = updatedHtml.replace(new RegExp(`{{\\s*${variable}\\s*}}`, 'g'), '')
+      
+      // Clean up any empty paragraphs or leftover "..." that might result
+      updatedHtml = cleanupAfterVariableDeletion(updatedHtml);
+      
       setHtmlContent(updatedHtml)
       
       if (editMode === 'source') {
-        let updatedSource = sourceHtml.replace(regex, '')
+        let updatedSource = sourceHtml.replace(
+          new RegExp(`<span[^>]*data-variable=["']${variable}["'][^>]*>{{\\s*${variable}\\s*}}</span>`, 'g'), 
+          ''
+        )
+        updatedSource = updatedSource.replace(new RegExp(`{{\\s*${variable}\\s*}}`, 'g'), '')
+        updatedSource = cleanupAfterVariableDeletion(updatedSource);
+        
         setSourceHtml(updatedSource)
       }
       
@@ -415,6 +505,10 @@ export function EnhancedFormEditor({
     }
   }
   
+  // Add debugging info
+  console.log("Current HTML content length:", htmlContent?.length || 0);
+  console.log("Editor Mode:", editMode);
+  
   return (
     <div className="space-y-4">
       {error && (
@@ -476,20 +570,29 @@ export function EnhancedFormEditor({
           <Card className="min-h-[500px]">
             <CardContent className="p-4">
               {editMode === 'visual' ? (
-                <div
-                  ref={editorRef}
-                  className="prose max-w-none min-h-[450px] document-preview word-document-content word-format p-4 border rounded"
-                  contentEditable
-                  onDragOver={handleDragOver}
-                  onDragLeave={handleDragLeave}
-                  onDrop={handleDrop}
-                  onInput={(e) => setHtmlContent(e.currentTarget.innerHTML)}
-                  dangerouslySetInnerHTML={{ __html: htmlContent }}
-                />
+                <>
+                  {!htmlContent && template?.htmlContent && (
+                    <div className="h-full flex items-center justify-center">
+                      <p>Loading document content...</p>
+                    </div>
+                  )}
+                  <div
+                    ref={editorRef}
+                    className="prose max-w-none min-h-[450px] document-preview word-document-content word-format p-4 border rounded"
+                    contentEditable
+                    suppressContentEditableWarning={true}
+                    onKeyDown={handleKeyDown}
+                    onInput={handleInput}
+                    onDragOver={handleDragOver}
+                    onDragLeave={handleDragLeave}
+                    onDrop={handleDrop}
+                    dangerouslySetInnerHTML={{ __html: htmlContent || (template?.htmlContent ? processVariableHighlighting(template.htmlContent) : '') }}
+                  />
+                </>
               ) : (
                 <textarea
                   className="w-full h-[450px] font-mono text-sm p-4 border rounded focus:outline-none focus:ring-2 focus:ring-primary"
-                  value={sourceHtml}
+                  value={sourceHtml || (template?.htmlContent ? template.htmlContent : '')}
                   onChange={(e) => setSourceHtml(e.target.value)}
                   placeholder="Edit HTML source here..."
                 />

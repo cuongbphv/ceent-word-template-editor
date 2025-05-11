@@ -1,20 +1,8 @@
 "use client"
 
-import React, { useEffect, useRef, useState } from 'react'
-import { Button } from "@/components/ui/button"
-import { 
-  Save, 
-  Download, 
-  Bold, 
-  Italic, 
-  Underline, 
-  AlignLeft, 
-  AlignCenter, 
-  AlignRight, 
-  List, 
-  ListOrdered, 
-  Image
-} from "lucide-react"
+import React, {useEffect, useRef, useState} from 'react'
+import {Button} from "@/components/ui/button"
+import {Download, Save} from "lucide-react"
 
 interface DocumentEditorProps {
   content: string;

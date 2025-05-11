@@ -1,0 +1,88 @@
+/* Cursor handling styles */
+
+/* Hide cursor marker elements */
+#temp-cursor-marker {
+  display: inline;
+  width: 0;
+  height: 0;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  outline: none;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+  position: relative;
+}
+
+/* Ensure contentEditable focus styles work properly */
+[contenteditable=true]:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 1px var(--primary);
+}
+
+/* Active element styling */
+[contenteditable=true]:active {
+  cursor: text;
+}
+
+/* Fix for pasting plain text into contentEditable */
+.prose [contenteditable=true] * {
+  white-space: inherit;
+}
+
+/* Fix for specific elements that might have default styling */
+[contenteditable=true] br {
+  display: block;
+  content: "";
+  margin-top: 0.5em;
+}
+
+/* Ensure proper line breaks in contentEditable */
+[contenteditable=true] p {
+  min-height: 1.2em;
+  outline: none !important;
+}
+
+/* Fix for empty paragraphs */
+[contenteditable=true] p:empty::before {
+  content: "\00a0";
+  display: inline;
+}
+
+/* Prevent automatic focus of headings */
+[contenteditable=true] h1,
+[contenteditable=true] h2,
+[contenteditable=true] h3,
+[contenteditable=true] h4,
+[contenteditable=true] h5,
+[contenteditable=true] h6 {
+  outline: none !important;
+  user-select: auto !important;
+}
+
+/* Critical fix to prevent contentEditable from auto-focusing on headings */
+.word-document-content[contenteditable=true] h1,
+.word-document-content[contenteditable=true] h2,
+.word-document-content[contenteditable=true] h3 {
+  position: relative;
+}
+
+/* Improve user selection within contentEditable */
+[contenteditable=true] {
+  -webkit-user-modify: read-write-plaintext-only;
+  cursor: text;
+}
+
+/* Prevent browsers from auto-scrolling to elements */
+[contenteditable=true] * {
+  scroll-margin-top: 100px;
+}
+
+/* Enable natural text input flow */
+[contenteditable=true] * {
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
