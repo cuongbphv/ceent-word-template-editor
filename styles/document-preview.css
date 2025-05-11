@@ -1,0 +1,151 @@
+/* Document Preview Table Styles */
+
+/* Base table styles */
+.document-preview table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1em 0;
+  overflow: hidden;
+}
+
+.document-preview table, 
+.document-preview th, 
+.document-preview td {
+  border: 1px solid #e2e8f0;
+}
+
+.document-preview .dark table, 
+.document-preview .dark th, 
+.document-preview .dark td {
+  border-color: #4a5568;
+}
+
+.document-preview th, 
+.document-preview td {
+  padding: 0.75rem;
+  text-align: left;
+  vertical-align: top;
+}
+
+.document-preview th {
+  background-color: #f7fafc;
+  font-weight: 600;
+}
+
+.document-preview .dark th {
+  background-color: #2d3748;
+}
+
+/* Table caption */
+.document-preview caption {
+  caption-side: top;
+  text-align: left;
+  padding: 0.5rem 0;
+  font-weight: 500;
+  color: #4a5568;
+}
+
+.document-preview .dark caption {
+  color: #e2e8f0;
+}
+
+/* Nested tables */
+.document-preview table table {
+  margin: 0;
+  border: none;
+}
+
+/* Table with class .document-table (specifically from Word documents) */
+.document-preview table.document-table {
+  table-layout: fixed;
+  width: 100%;
+  max-width: 100%;
+  margin-bottom: 1rem;
+  background-color: transparent;
+}
+
+/* Fix for table cell vertical alignment */
+.document-preview table.document-table td {
+  vertical-align: middle;
+}
+
+/* Document default styles that might be getting lost */
+.document-preview p {
+  margin-bottom: 0.5rem;
+  line-height: 1.5;
+}
+
+.document-preview h1, 
+.document-preview h2, 
+.document-preview h3, 
+.document-preview h4, 
+.document-preview h5, 
+.document-preview h6 {
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+/* Preserve spacing between paragraphs in table cells */
+.document-preview td > p,
+.document-preview th > p {
+  margin-bottom: 0.5rem;
+}
+
+.document-preview td > p:last-child,
+.document-preview th > p:last-child {
+  margin-bottom: 0;
+}
+
+/* Fix for lists in the document */
+.document-preview ul,
+.document-preview ol {
+  padding-left: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.document-preview li {
+  margin-bottom: 0.25rem;
+}
+
+/* Fix for images in tables */
+.document-preview td img,
+.document-preview th img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Fix for inline formatting */
+.document-preview b, 
+.document-preview strong {
+  font-weight: 600;
+}
+
+.document-preview i,
+.document-preview em {
+  font-style: italic;
+}
+
+/* Fix for images and other embedded objects */
+.document-preview img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Keep all table borders visible and consistent */
+.document-preview table,
+.document-preview tr,
+.document-preview td,
+.document-preview th {
+  border-width: 1px !important;
+  border-style: solid !important;
+  border-color: #e2e8f0 !important;
+}
+
+.document-preview .dark table,
+.document-preview .dark tr,
+.document-preview .dark td,
+.document-preview .dark th {
+  border-color: #4a5568 !important;
+}

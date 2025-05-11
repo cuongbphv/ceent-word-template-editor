@@ -1,0 +1,125 @@
+/* Word document formatting fixes */
+
+/* General document styling */
+.word-document-content {
+  font-family: 'Calibri', 'Arial', sans-serif;
+  line-height: 1.5;
+  color: #000;
+}
+
+/* Fix for text alignment */
+.word-document-content h1,
+.word-document-content h2,
+.word-document-content h3,
+.word-document-content h4,
+.word-document-content h5,
+.word-document-content h6 {
+  text-align: center;
+  margin-top: 1em;
+  margin-bottom: 0.5em;
+  font-weight: bold;
+}
+
+/* Fix for underlined text */
+.word-document-content u,
+.word-document-content .underline,
+.word-document-content span[style*="text-decoration: underline"],
+.word-document-content span[style*="text-decoration:underline"] {
+  text-decoration: underline !important;
+  border-bottom: none !important;
+  display: inline !important;
+}
+
+/* Fix for hyperlinks */
+.word-document-content a,
+.word-document-content a:link,
+.word-document-content a:visited {
+  color: #0563c1 !important;
+  text-decoration: underline !important;
+  cursor: pointer;
+}
+
+/* Fix for images */
+.word-document-content img {
+  display: block !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  max-width: 100% !important;
+  height: auto !important;
+}
+
+/* Fix for lists */
+.word-document-content ul,
+.word-document-content ol {
+  padding-left: 2.5em !important;
+  margin-top: 0.5em !important;
+  margin-bottom: 0.5em !important;
+}
+
+.word-document-content li {
+  margin-bottom: 0.25em !important;
+}
+
+/* Fix for bulleted lists */
+.word-document-content ul > li {
+  list-style-type: disc !important;
+}
+
+.word-document-content ul > li::marker {
+  color: black !important;
+}
+
+/* Fix for variables in text */
+.word-document-content .variable-placeholder {
+  display: inline-block !important;
+  background-color: #f0f8ff !important;
+  border: 1px dashed #4299e1 !important;
+  padding: 0 0.25rem !important;
+  margin: 0 0.1rem !important;
+  border-radius: 0.25rem !important;
+  font-family: monospace !important;
+  text-decoration: none !important;
+  white-space: nowrap !important;
+}
+
+/* Override for Tailwind prose styles that might be causing issues */
+.prose .word-document-content a {
+  font-weight: normal !important;
+  text-decoration: underline !important;
+}
+
+.prose .word-document-content ul > li::marker {
+  color: black !important;
+}
+
+.prose .word-document-content img {
+  margin-top: 1em !important;
+  margin-bottom: 1em !important;
+}
+
+/* Fix for paragraphs */
+.word-document-content p {
+  margin-top: 0.5em !important;
+  margin-bottom: 0.5em !important;
+}
+
+/* Fix for document width */
+.document-preview.word-document-content {
+  max-width: 100% !important;
+  width: 100% !important;
+  padding: 2em !important;
+}
+
+/* Fix for centered text */
+.word-document-content .center-text,
+.word-document-content [style*="text-align: center"],
+.word-document-content [style*="text-align:center"] {
+  text-align: center !important;
+}
+
+/* Fix for justified text */
+.word-document-content .justify-text,
+.word-document-content [style*="text-align: justify"],
+.word-document-content [style*="text-align:justify"] {
+  text-align: justify !important;
+}

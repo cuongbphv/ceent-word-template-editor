@@ -1,0 +1,265 @@
+/* Document editor styles */
+.document-editor-container {
+  height: 100%;
+  overflow: visible !important;
+  position: relative;
+  z-index: 0;
+}
+
+/* Fix for duplicate toolbar issue */
+.document-editor-container .ql-toolbar {
+  background-color: #f8fafc;
+  border-bottom: 1px solid #e2e8f0;
+  padding: 8px;
+  position: relative;
+  z-index: 2;
+}
+
+/* The first toolbar is the one we want to keep */
+.document-editor-container .ql-toolbar:first-of-type {
+  display: block;
+}
+
+/* Hide any additional toolbars */
+.document-editor-container .ql-toolbar:not(:first-of-type) {
+  display: none !important;
+}
+
+.document-editor-container .ql-editor {
+  min-height: 500px;
+  font-family: 'Calibri', 'Arial', sans-serif;
+  font-size: 12pt;
+  line-height: 1.5;
+  padding: 1cm;
+  background-color: white;
+  overflow: visible !important;
+  position: relative;
+  z-index: 1;
+}
+
+.dark .document-editor-container .ql-editor {
+  background-color: #2d3748;
+  color: #e2e8f0;
+}
+
+.dark .document-editor-container .ql-toolbar {
+  background-color: #1a202c;
+  border-color: #4a5568;
+}
+
+.document-editor-container .ql-container {
+  border: none;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  overflow: visible !important;
+}
+
+/* Proper variable highlighting */
+.document-editor-container .ql-editor .variable-highlight {
+  color: #3182ce !important;
+  background-color: #ebf8ff !important;
+  font-family: monospace !important;
+  border: 1px dashed #4299e1 !important;
+  border-radius: 4px !important;
+  padding: 0 4px !important;
+  margin: 0 2px !important;
+  display: inline-block !important;
+  text-decoration: none !important;
+}
+
+/* Remove any text decorations applied by Quill */
+.document-editor-container .ql-editor u {
+  text-decoration: none;
+}
+
+/* Override Quill's color choices */
+.document-editor-container .ql-editor span[style*="color"] {
+  color: inherit !important; 
+}
+
+.document-editor-container .ql-editor span[style*="background"] {
+  background: transparent !important;
+}
+
+/* Variable placeholders in the preview */
+.variable-placeholder {
+  display: inline-block;
+  background-color: #f0f8ff;
+  border: 1px dashed #4299e1;
+  padding: 0 0.25rem;
+  margin: 0 0.1rem;
+  border-radius: 0.25rem;
+  font-family: monospace;
+  transition: all 0.2s;
+  text-decoration: none !important;
+}
+
+.dark .variable-placeholder {
+  background-color: #1e3a5f;
+  border-color: #3b82f6;
+  color: #e0e0e0;
+}
+
+.variable-placeholder:hover {
+  background-color: #e6f7ff;
+  border-color: #3182ce;
+  cursor: pointer;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.dark .variable-placeholder:hover {
+  background-color: #2d4e77;
+  border-color: #60a5fa;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+/* Override for any Quill-added colors/styling */
+.ql-editor [style] {
+  color: inherit !important;
+  background-color: transparent !important;
+  border-bottom: none !important;
+  text-decoration: none !important;
+}
+
+/* Exception for variable highlighting */
+.ql-editor .variable-highlight[style] {
+  color: #3182ce !important;
+  background-color: #ebf8ff !important;
+  border: 1px dashed #4299e1 !important;
+}
+
+/* Form element styles */
+.form-element {
+  position: absolute;
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.25rem;
+  padding: 0.5rem;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+  pointer-events: auto;
+}
+
+.dark .form-element {
+  background: #2d3748;
+  border-color: #4a5568;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* Form element label */
+.form-element-label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  margin-bottom: 0.25rem;
+  display: flex;
+  justify-content: space-between;
+}
+
+/* Hide the form element "key" labels */
+.form-element-key {
+  display: none !important;
+}
+
+/* Additional styles for forms */
+.form-element-highlighted {
+  animation: highlight-pulse 2s ease-in-out;
+}
+
+@keyframes highlight-pulse {
+  0% { box-shadow: 0 0 0 0 rgba(66, 153, 225, 0.5); }
+  70% { box-shadow: 0 0 0 10px rgba(66, 153, 225, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(66, 153, 225, 0); }
+}
+
+/* Document preview clear styling */
+.document-preview * {
+  text-decoration: none !important;
+}
+
+.document-preview span {
+  color: inherit !important;
+  background-color: transparent !important;
+  border-bottom: none !important;
+}
+
+/* Exception for variables in preview */
+.document-preview .variable-placeholder {
+  display: inline-block;
+  background-color: #f0f8ff !important;
+  border: 1px dashed #4299e1 !important;
+  padding: 0 0.25rem !important;
+  margin: 0 0.1rem !important;
+  border-radius: 0.25rem !important;
+  font-family: monospace !important;
+  text-decoration: none !important;
+}
+
+/* Table styling for document preview */
+.document-preview table.document-table {
+  width: 100% !important;
+  border-collapse: collapse !important;
+  margin: 1rem 0 !important;
+  table-layout: auto !important;
+  border: 1px solid #e2e8f0 !important;
+}
+
+.dark .document-preview table.document-table {
+  border-color: #4a5568 !important;
+}
+
+.document-preview table.document-table th,
+.document-preview table.document-table td {
+  border: 1px solid #e2e8f0 !important;
+  padding: 0.5rem !important;
+  text-align: left !important;
+  vertical-align: top !important;
+}
+
+.dark .document-preview table.document-table th,
+.dark .document-preview table.document-table td {
+  border-color: #4a5568 !important;
+}
+
+.document-preview table.document-table th {
+  background-color: #f7fafc !important;
+  font-weight: 600 !important;
+}
+
+.dark .document-preview table.document-table th {
+  background-color: #2d3748 !important;
+}
+
+/* Ensure tables aren't cut off */
+.word-document-content {
+  overflow-x: auto !important;
+}
+
+/* Preserve formatting within table cells */
+.document-preview table.document-table td p,
+.document-preview table.document-table th p {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* Fix table cell spacing */
+.document-preview table.document-table td p + p,
+.document-preview table.document-table th p + p {
+  margin-top: 0.5rem !important;
+}
+
+/* Table wrapper for horizontal scrolling */
+.table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  margin-bottom: 1rem;
+}
+
+/* Fix rowspan and colspan display */
+.document-preview table.document-table td[rowspan],
+.document-preview table.document-table th[rowspan] {
+  vertical-align: middle !important;
+}
+
+.document-preview table.document-table td[colspan],
+.document-preview table.document-table th[colspan] {
+  text-align: center !important;
+}
